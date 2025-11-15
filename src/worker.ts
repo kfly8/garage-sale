@@ -49,8 +49,8 @@ app.get('/auth/callback', async (c) => {
 
   try {
     const github = getGitHub(c.env as AuthEnv)
-    const { accessToken } = await github.validateAuthorizationCode(code)
-    const githubUser = await getGitHubUser(accessToken)
+    const tokens = await github.validateAuthorizationCode(code)
+    const githubUser = await getGitHubUser(tokens.accessToken())
 
     // ユーザーを検索または作成
     let userResult = await db.execute({
