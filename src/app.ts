@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { db } from './db'
-import crypto from 'crypto'
+import crypto from 'node:crypto'
 
 export const app = new Hono()
 
