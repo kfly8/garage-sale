@@ -14,13 +14,43 @@ OSSのメンテナーを募集したい人と、メンテナーになりたい�
 - **フレームワーク**: Hono
 - **言語**: TypeScript
 - **ランタイム**: Node.js
+- **データベース**: Turso (libSQL)
 
 ## セットアップ
 
-```bash
-# 依存関係のインストール
-npm install
+### 1. 依存関係のインストール
 
+```bash
+npm install
+```
+
+### 2. Tursoのセットアップ
+
+```bash
+# Turso CLIのインストール（初回のみ）
+curl -sSfL https://get.tur.so/install.sh | bash
+
+# ログイン（初回のみ）
+turso auth login
+
+# データベースの作成
+turso db create garage-sale
+
+# データベースURLとトークンを取得
+turso db show garage-sale --url
+turso db tokens create garage-sale
+
+# .envファイルを作成
+# TURSO_DATABASE_URL=<your-database-url>
+# TURSO_AUTH_TOKEN=<your-auth-token>
+
+# スキーマの適用
+cat schema.sql | turso db shell garage-sale
+```
+
+### 3. サーバーの起動
+
+```bash
 # 開発サーバーの起動
 npm run dev
 
@@ -32,6 +62,12 @@ npm start
 ```
 
 ## API エンドポイント
+
+### ユーザー
+
+- `GET /api/users` - ユーザー一覧
+- `POST /api/users` - ユーザー作成
+- `GET /api/users/:id` - ユーザー詳細
 
 ### プロジェクト
 
