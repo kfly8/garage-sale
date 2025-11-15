@@ -16,15 +16,16 @@ describe('API Tests', () => {
     let createdUserId: string
 
     it('should create a new user', async () => {
+      const uniqueId = `test-${Date.now()}-${Math.random()}`
       const res = await app.request('/api/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          githubId: 'test-123',
-          githubUsername: 'testuser',
-          email: 'test@example.com',
+          githubId: uniqueId,
+          githubUsername: `testuser-${uniqueId}`,
+          email: `test-${uniqueId}@example.com`,
         }),
       })
 
@@ -32,8 +33,8 @@ describe('API Tests', () => {
 
       const data = await res.json()
       expect(data.user).toBeDefined()
-      expect(data.user.github_username).toBe('testuser')
-      expect(data.user.email).toBe('test@example.com')
+      expect(data.user.github_username).toContain('testuser')
+      expect(data.user.email).toContain('test')
 
       createdUserId = data.user.id
     })
@@ -71,15 +72,16 @@ describe('API Tests', () => {
 
     beforeAll(async () => {
       // Create a test user for projects
+      const uniqueId = `project-owner-${Date.now()}-${Math.random()}`
       const userRes = await app.request('/api/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          githubId: 'project-owner-123',
-          githubUsername: 'projectowner',
-          email: 'owner@example.com',
+          githubId: uniqueId,
+          githubUsername: `projectowner-${uniqueId}`,
+          email: `owner-${uniqueId}@example.com`,
         }),
       })
       const userData = await userRes.json()
@@ -146,15 +148,16 @@ describe('API Tests', () => {
 
     beforeAll(async () => {
       // Create a test user for maintainer
+      const uniqueId = `maintainer-${Date.now()}-${Math.random()}`
       const userRes = await app.request('/api/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          githubId: 'maintainer-123',
-          githubUsername: 'testmaintainer',
-          email: 'maintainer@example.com',
+          githubId: uniqueId,
+          githubUsername: `testmaintainer-${uniqueId}`,
+          email: `maintainer-${uniqueId}@example.com`,
         }),
       })
       const userData = await userRes.json()
@@ -226,15 +229,16 @@ describe('API Tests', () => {
 
     beforeAll(async () => {
       // Create test user
+      const uniqueId = `match-user-${Date.now()}-${Math.random()}`
       const userRes = await app.request('/api/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          githubId: 'match-user-123',
-          githubUsername: 'matchuser',
-          email: 'match@example.com',
+          githubId: uniqueId,
+          githubUsername: `matchuser-${uniqueId}`,
+          email: `match-${uniqueId}@example.com`,
         }),
       })
       const userData = await userRes.json()

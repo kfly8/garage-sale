@@ -53,8 +53,78 @@ app.get('/api/users/:id', async (c) => {
 
 // プロジェクト関連のエンドポイント
 app.get('/api/projects', async (c) => {
-  const result = await db.execute('SELECT * FROM projects ORDER BY created_at DESC')
-  return c.json({ projects: result.rows })
+  // クエリパラメータの取得
+  const language = c.req.query('language')
+  const status = c.req.query('status')
+  const isPaid = c.req.query('isPaid')
+  const sortBy = c.req.query('sortBy') || 'created_at'
+  const order = c.req.query('order') || 'DESC'
+  const page = parseInt(c.req.query('page') || '1')
+  const limit = parseInt(c.req.query('limit') || '10')
+  const offset = (page - 1) * limit
+
+  // SQLクエリの構築
+  let sql = 'SELECT * FROM projects WHERE 1=1'
+  const args: any[] = []
+
+  if (language) {
+    sql += ' AND languages LIKE ?'
+    args.push(`%"${language}"%`)
+  }
+
+  if (status) {
+    sql += ' AND status = ?'
+    args.push(status)
+  }
+
+  if (isPaid !== undefined) {
+    sql += ' AND is_paid = ?'
+    args.push(isPaid === 'true' ? 1 : 0)
+  }
+
+  // ソート
+  const validSortColumns = ['created_at', 'updated_at', 'name']
+  const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'created_at'
+  const sortOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC'
+  sql += ` ORDER BY ${sortColumn} ${sortOrder}`
+
+  // ページネーション
+  sql += ' LIMIT ? OFFSET ?'
+  args.push(limit, offset)
+
+  const result = await db.execute({ sql, args })
+
+  // 総数の取得
+  let countSql = 'SELECT COUNT(*) as total FROM projects WHERE 1=1'
+  const countArgs: any[] = []
+
+  if (language) {
+    countSql += ' AND languages LIKE ?'
+    countArgs.push(`%"${language}"%`)
+  }
+
+  if (status) {
+    countSql += ' AND status = ?'
+    countArgs.push(status)
+  }
+
+  if (isPaid !== undefined) {
+    countSql += ' AND is_paid = ?'
+    countArgs.push(isPaid === 'true' ? 1 : 0)
+  }
+
+  const countResult = await db.execute({ sql: countSql, args: countArgs })
+  const total = (countResult.rows[0] as any).total
+
+  return c.json({
+    projects: result.rows,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit)
+    }
+  })
 })
 
 app.post('/api/projects', async (c) => {
@@ -121,8 +191,89 @@ app.get('/api/projects/:id', async (c) => {
 
 // メンテナー関連のエンドポイント
 app.get('/api/maintainers', async (c) => {
-  const result = await db.execute('SELECT * FROM maintainers ORDER BY created_at DESC')
-  return c.json({ maintainers: result.rows })
+  // クエリパラメータの取得
+  const skill = c.req.query('skill')
+  const language = c.req.query('language')
+  const availability = c.req.query('availability')
+  const interestedInPaid = c.req.query('interestedInPaid')
+  const sortBy = c.req.query('sortBy') || 'created_at'
+  const order = c.req.query('order') || 'DESC'
+  const page = parseInt(c.req.query('page') || '1')
+  const limit = parseInt(c.req.query('limit') || '10')
+  const offset = (page - 1) * limit
+
+  // SQLクエリの構築
+  let sql = 'SELECT * FROM maintainers WHERE 1=1'
+  const args: any[] = []
+
+  if (skill) {
+    sql += ' AND skills LIKE ?'
+    args.push(`%"${skill}"%`)
+  }
+
+  if (language) {
+    sql += ' AND languages LIKE ?'
+    args.push(`%"${language}"%`)
+  }
+
+  if (availability) {
+    sql += ' AND availability = ?'
+    args.push(availability)
+  }
+
+  if (interestedInPaid !== undefined) {
+    sql += ' AND interested_in_paid = ?'
+    args.push(interestedInPaid === 'true' ? 1 : 0)
+  }
+
+  // ソート
+  const validSortColumns = ['created_at', 'updated_at', 'name']
+  const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'created_at'
+  const sortOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC'
+  sql += ` ORDER BY ${sortColumn} ${sortOrder}`
+
+  // ページネーション
+  sql += ' LIMIT ? OFFSET ?'
+  args.push(limit, offset)
+
+  const result = await db.execute({ sql, args })
+
+  // 総数の取得
+  let countSql = 'SELECT COUNT(*) as total FROM maintainers WHERE 1=1'
+  const countArgs: any[] = []
+
+  if (skill) {
+    countSql += ' AND skills LIKE ?'
+    countArgs.push(`%"${skill}"%`)
+  }
+
+  if (language) {
+    countSql += ' AND languages LIKE ?'
+    countArgs.push(`%"${language}"%`)
+  }
+
+  if (availability) {
+    countSql += ' AND availability = ?'
+    countArgs.push(availability)
+  }
+
+  if (interestedInPaid !== undefined) {
+    countSql += ' AND interested_in_paid = ?'
+    countArgs.push(interestedInPaid === 'true' ? 1 : 0)
+  }
+
+  const countResult = await db.execute({ sql: countSql, args: countArgs })
+  const total = (countResult.rows[0] as any).total
+
+  return c.json({
+    maintainers: result.rows,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit)
+    }
+  })
 })
 
 app.post('/api/maintainers', async (c) => {

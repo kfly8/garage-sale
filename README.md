@@ -89,13 +89,30 @@ npm run test:coverage
 
 ### プロジェクト
 
-- `GET /api/projects` - プロジェクト一覧
+- `GET /api/projects` - プロジェクト一覧（検索・フィルタリング・ページネーション対応）
+  - クエリパラメータ:
+    - `language` - 言語でフィルタ (例: `?language=TypeScript`)
+    - `status` - ステータスでフィルタ (`open`, `matched`, `closed`)
+    - `isPaid` - 有償/無償でフィルタ (`true`, `false`)
+    - `sortBy` - ソート項目 (`created_at`, `updated_at`, `name`)
+    - `order` - ソート順 (`ASC`, `DESC`)
+    - `page` - ページ番号 (デフォルト: 1)
+    - `limit` - 1ページあたりの件数 (デフォルト: 10)
 - `POST /api/projects` - プロジェクト作成
 - `GET /api/projects/:id` - プロジェクト詳細
 
 ### メンテナー
 
-- `GET /api/maintainers` - メンテナー一覧
+- `GET /api/maintainers` - メンテナー一覧（検索・フィルタリング・ページネーション対応）
+  - クエリパラメータ:
+    - `skill` - スキルでフィルタ (例: `?skill=TypeScript`)
+    - `language` - 言語でフィルタ
+    - `availability` - 空き状況でフィルタ (`full-time`, `part-time`, `volunteer`)
+    - `interestedInPaid` - 有償希望でフィルタ (`true`, `false`)
+    - `sortBy` - ソート項目 (`created_at`, `updated_at`, `name`)
+    - `order` - ソート順 (`ASC`, `DESC`)
+    - `page` - ページ番号 (デフォルト: 1)
+    - `limit` - 1ページあたりの件数 (デフォルト: 10)
 - `POST /api/maintainers` - メンテナープロフィール作成
 - `GET /api/maintainers/:id` - メンテナー詳細
 
