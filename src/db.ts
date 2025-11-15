@@ -9,6 +9,9 @@ if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
   }
 }
 
+// Cache for database clients
+let cachedDb: Client | null = null
+
 // Helper function to get database client
 export function getDb(env?: { TURSO_DATABASE_URL?: string; TURSO_AUTH_TOKEN?: string }): Client {
   // In Cloudflare Workers environment, use env from context
@@ -19,12 +22,28 @@ export function getDb(env?: { TURSO_DATABASE_URL?: string; TURSO_AUTH_TOKEN?: st
     })
   }
 
-  // In Node.js environment, use process.env
-  return createClient({
-    url: process.env.TURSO_DATABASE_URL!,
-    authToken: process.env.TURSO_AUTH_TOKEN!,
-  })
+  // In Node.js environment, use process.env (cached)
+  if (!cachedDb) {
+    cachedDb = createClient({
+      url: process.env.TURSO_DATABASE_URL!,
+      authToken: process.env.TURSO_AUTH_TOKEN!,
+    })
+  }
+  return cachedDb
 }
 
-// Default export for Node.js environment
-export const db = getDb()
+// Default export for Node.js environment - lazy initialization
+let defaultClient: Client | null = null
+export const db = new Proxy({} as Client, {
+  get(target, prop) {
+    if (!defaultClient) {
+      defaultClient = getDb()
+    }
+    const value = (defaultClient as any)[prop]
+    // Bind methods to the actual client instance to preserve 'this' context
+    if (typeof value === 'function') {
+      return value.bind(defaultClient)
+    }
+    return value
+  }
+})
