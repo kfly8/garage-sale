@@ -61,6 +61,24 @@ npm run build
 npm start
 ```
 
+## テスト
+
+```bash
+# テストの実行
+npm test
+
+# ウォッチモードでテスト
+npm run test:watch
+
+# UIでテスト
+npm run test:ui
+
+# カバレッジレポート付きでテスト
+npm run test:coverage
+```
+
+このプロジェクトでは Vitest を使用してユニットテストを実行しています。全てのAPIエンドポイントに対するテストが含まれています。
+
 ## API エンドポイント
 
 ### ユーザー
