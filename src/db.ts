@@ -1,4 +1,4 @@
-import { createClient } from '@libsql/client'
+import { createClient, type Client } from '@libsql/client'
 
 // Load dotenv only in Node.js environment
 if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
@@ -9,7 +9,22 @@ if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
   }
 }
 
-export const db = createClient({
-  url: process.env.TURSO_DATABASE_URL!,
-  authToken: process.env.TURSO_AUTH_TOKEN!,
-})
+// Helper function to get database client
+export function getDb(env?: { TURSO_DATABASE_URL?: string; TURSO_AUTH_TOKEN?: string }): Client {
+  // In Cloudflare Workers environment, use env from context
+  if (env?.TURSO_DATABASE_URL && env?.TURSO_AUTH_TOKEN) {
+    return createClient({
+      url: env.TURSO_DATABASE_URL,
+      authToken: env.TURSO_AUTH_TOKEN,
+    })
+  }
+
+  // In Node.js environment, use process.env
+  return createClient({
+    url: process.env.TURSO_DATABASE_URL!,
+    authToken: process.env.TURSO_AUTH_TOKEN!,
+  })
+}
+
+// Default export for Node.js environment
+export const db = getDb()
