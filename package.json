@@ -18,6 +18,8 @@
   "license": "ISC",
   "dependencies": {
     "@hono/node-server": "^1.19.6",
+    "@libsql/client": "^0.15.15",
+    "dotenv": "^17.2.3",
     "hono": "^4.10.6"
   },
   "devDependencies": {
