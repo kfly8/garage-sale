@@ -121,6 +121,60 @@ npm run test:coverage
 - `GET /api/matches` - マッチング一覧
 - `POST /api/matches` - マッチング作成
 
+## デプロイ
+
+### Cloudflare Workers
+
+このプロジェクトは Cloudflare Workers にデプロイできます。
+
+#### 前提条件
+
+- Cloudflare アカウント
+- Wrangler CLI （プロジェクトに含まれています）
+
+#### デプロイ手順
+
+1. **Cloudflare にログイン**
+
+```bash
+npx wrangler login
+```
+
+2. **環境変数の設定**
+
+本番環境の秘密情報を設定します：
+
+```bash
+npx wrangler secret put TURSO_DATABASE_URL
+npx wrangler secret put TURSO_AUTH_TOKEN
+```
+
+3. **デプロイ**
+
+```bash
+npm run deploy
+```
+
+4. **ローカルでの動作確認**
+
+Cloudflare Workers 環境をローカルで試すには：
+
+```bash
+npm run dev:worker
+```
+
+`.dev.vars` ファイルに開発用の環境変数を設定してください。
+
+#### デプロイ後
+
+デプロイが完了すると、以下のような URL が表示されます：
+
+```
+https://garage-sale.<your-subdomain>.workers.dev
+```
+
+この URL にアクセスして API が動作していることを確認してください。
+
 ## ライセンス
 
 ISC
