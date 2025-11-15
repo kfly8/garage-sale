@@ -285,7 +285,7 @@ app.get('/api/projects/:id', async (c) => {
 })
 
 // Add minimal endpoints for other resources
-app.get('/api/users', async (c) => {
+app.get('/api/users', requireAuth, async (c) => {
   const db = getDb(c.env)
   const result = await db.execute('SELECT * FROM users ORDER BY created_at DESC')
   return c.json({ users: result.rows })
