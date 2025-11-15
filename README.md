@@ -121,6 +121,39 @@ npm run test:coverage
 - `GET /api/matches` - マッチング一覧
 - `POST /api/matches` - マッチング作成
 
+## 認証
+
+このプロジェクトは GitHub OAuth を使用した認証機能を実装しています。
+
+### GitHub OAuth アプリの設定
+
+1. **GitHub OAuth App の作成**
+   - https://github.com/settings/developers にアクセス
+   - "New OAuth App" をクリック
+   - 以下の情報を入力：
+     - Application name: `garage-sale` (任意)
+     - Homepage URL: `https://garage-sale.kfly8.workers.dev` (本番環境の場合)
+     - Authorization callback URL: `https://garage-sale.kfly8.workers.dev/auth/callback`
+   - "Register application" をクリック
+   - Client ID と Client Secret を控える
+
+2. **ローカル開発用の OAuth App**
+   - 開発用に別の OAuth App を作成することを推奨
+   - Authorization callback URL: `http://localhost:8787/auth/callback`
+
+### 認証エンドポイント
+
+- `GET /auth/login` - GitHub OAuth ログインを開始
+- `GET /auth/callback` - GitHub OAuth コールバック
+- `GET /auth/logout` - ログアウト
+- `GET /auth/me` - 現在のユーザー情報を取得
+
+### 保護されたエンドポイント
+
+以下のエンドポイントは認証が必要です：
+
+- `POST /api/projects` - プロジェクト作成（認証されたユーザーが owner になります）
+
 ## デプロイ
 
 ### Cloudflare Workers
@@ -131,6 +164,7 @@ npm run test:coverage
 
 - Cloudflare アカウント
 - Wrangler CLI （プロジェクトに含まれています）
+- GitHub OAuth App の作成（上記参照）
 
 #### デプロイ手順
 
@@ -147,6 +181,8 @@ npx wrangler login
 ```bash
 npx wrangler secret put TURSO_DATABASE_URL
 npx wrangler secret put TURSO_AUTH_TOKEN
+npx wrangler secret put GITHUB_CLIENT_ID
+npx wrangler secret put GITHUB_CLIENT_SECRET
 ```
 
 3. **デプロイ**
@@ -163,7 +199,14 @@ Cloudflare Workers 環境をローカルで試すには：
 npm run dev:worker
 ```
 
-`.dev.vars` ファイルに開発用の環境変数を設定してください。
+`.dev.vars` ファイルに開発用の環境変数を設定してください：
+
+```
+TURSO_DATABASE_URL=<your-database-url>
+TURSO_AUTH_TOKEN=<your-auth-token>
+GITHUB_CLIENT_ID=<your-github-client-id>
+GITHUB_CLIENT_SECRET=<your-github-client-secret>
+```
 
 #### デプロイ後
 

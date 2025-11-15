@@ -5,7 +5,12 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 # Add your environment variables here
-# TURSO_DATABASE_URL will be added as a secret
+# Secrets (set via wrangler secret put):
+# - TURSO_DATABASE_URL
+# - TURSO_AUTH_TOKEN
+# - GITHUB_CLIENT_ID
+# - GITHUB_CLIENT_SECRET
+APP_URL = "https://garage-sale.kfly8.workers.dev"
 
 # Uncomment and configure if you want to use custom domains
 # routes = [
